@@ -42,4 +42,9 @@ extension String {
         }
         return str.substring(with: NSMakeRange(from, length))
     }
+    
+    func matches(_ regularExpression: String) -> Bool {
+        let predicate = NSPredicate(format: "SELF MATCHES %@", regularExpression)
+        return predicate.evaluate(with: self)
+    }
 }
