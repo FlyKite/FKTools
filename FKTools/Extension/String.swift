@@ -16,6 +16,22 @@ extension String {
         }
     }
     
+    var base64EncodedString: String? {
+        get {
+            let data = self.data(using: .utf8)
+            return data?.base64EncodedString()
+        }
+    }
+    
+    var base64DecodedString: String? {
+        get {
+            if let data = Data(base64Encoded: self) {
+                return String(data: data, encoding: .utf8)
+            }
+            return nil
+        }
+    }
+    
     func substring(from: Int) -> String {
         return self.substring(from: from, length: self.length - from)
     }
@@ -46,5 +62,16 @@ extension String {
     func matches(_ regularExpression: String) -> Bool {
         let predicate = NSPredicate(format: "SELF MATCHES %@", regularExpression)
         return predicate.evaluate(with: self)
+    }
+    
+    func boundingRect(with size: CGSize,
+                      options: NSStringDrawingOptions,
+                      attributes: [NSAttributedStringKey: Any]?,
+                      context: NSStringDrawingContext?) -> CGRect {
+        let str = self as NSString
+        return str.boundingRect(with: size,
+                                options: options,
+                                attributes: attributes,
+                                context: context)
     }
 }
