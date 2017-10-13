@@ -1,6 +1,6 @@
 //
 //  UIView.swift
-//  FKToolsDemo
+//  FKTools
 //
 //  Created by FlyKite on 2017/10/12.
 //  Copyright © 2017年 Doge Studio. All rights reserved.
@@ -58,11 +58,21 @@ extension UIView {
         get {
             return self.frame.origin.x + self.width
         }
+        set {
+            var frame = self.frame
+            frame.size.x = newValue - self.width
+            self.frame = frame
+        }
     }
     
     var bottom: CGFloat {
         get {
             return self.frame.origin.y + self.height
+        }
+        set {
+            var frame = self.frame
+            frame.size.y = newValue - self.height
+            self.frame = frame
         }
     }
 
