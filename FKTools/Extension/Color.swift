@@ -58,10 +58,24 @@ extension Int {
         return self.rgbColor(alpha: 1)
     }
     
+    @available(iOS 10.0, *)
+    var rgbP3Color: UIColor {
+        return self.rgbP3Color(alpha: 1)
+    }
+    
     func rgbColor(alpha: CGFloat) -> UIColor {
         let red = CGFloat(self >> 16) / 255.0
         let green = CGFloat((self >> 8) & 0xFF) / 255.0
         let blue = CGFloat(self & 0xFF) / 255.0
         return UIColor(red: red, green: green, blue: blue, alpha: alpha)
     }
+    
+    @available(iOS 10.0, *)
+    func rgbP3Color(alpha: CGFloat) -> UIColor {
+        let red = CGFloat(self >> 16) / 255.0
+        let green = CGFloat((self >> 8) & 0xFF) / 255.0
+        let blue = CGFloat(self & 0xFF) / 255.0
+        return UIColor(displayP3Red: red, green: green, blue: blue, alpha: alpha)
+    }
+    
 }

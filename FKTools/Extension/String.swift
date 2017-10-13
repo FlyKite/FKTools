@@ -10,6 +10,15 @@ import UIKit
 
 extension String {
     
+    static func convert(jsonObject: Any) -> String? {
+        if JSONSerialization.isValidJSONObject(self) {
+            if let data = try? JSONSerialization.data(withJSONObject: self, options: .prettyPrinted) {
+                return String.init(data: data, encoding: .utf8)
+            }
+        }
+        return nil
+    }
+    
     var length: Int {
         get {
             return self.characters.count
@@ -30,6 +39,13 @@ extension String {
             }
             return nil
         }
+    }
+    
+    func toJsonObject() -> Any? {
+        if let data = self.data(using: .utf8) {
+            return try? JSONSerialization.jsonObject(with: data, options: .allowFragments)
+        }
+        return nil
     }
     
     func substring(from: Int) -> String {
