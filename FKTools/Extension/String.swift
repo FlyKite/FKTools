@@ -10,9 +10,9 @@ import UIKit
 
 extension String {
     
-    static func convert(jsonObject: Any) -> String? {
-        if JSONSerialization.isValidJSONObject(self) {
-            if let data = try? JSONSerialization.data(withJSONObject: self, options: .prettyPrinted) {
+    static func convert(fromJSON object: Any) -> String? {
+        if JSONSerialization.isValidJSONObject(object) {
+            if let data = try? JSONSerialization.data(withJSONObject: object, options: .prettyPrinted) {
                 return String.init(data: data, encoding: .utf8)
             }
         }
@@ -23,6 +23,20 @@ extension String {
         get {
             return self.characters.count
         }
+    }
+    
+    var firstPinyinLetter: String {
+        get {
+            return self.toPinyin().substring(to: 1)
+        }
+    }
+    
+    func toPinyin() -> String {
+        let str = NSMutableString(string: self)
+        CFStringTransform(str as CFMutableString, nil, kCFStringTransformMandarinLatin, false)
+        CFStringTransform(str as CFMutableString, nil, kCFStringTransformStripDiacritics, false)
+        let pinyin = str.capitalized
+        return pinyin
     }
     
     var base64EncodedString: String? {
