@@ -19,12 +19,6 @@ extension String {
         return nil
     }
     
-    var length: Int {
-        get {
-            return self.characters.count
-        }
-    }
-    
     var firstPinyinLetter: String {
         get {
             return self.toPinyin().substring(to: 1)
@@ -63,7 +57,7 @@ extension String {
     }
     
     func substring(from: Int) -> String {
-        return self.substring(from: from, length: self.length - from)
+        return self.substring(from: from, length: self.count - from)
     }
     
     func substring(to: Int) -> String {
@@ -79,12 +73,12 @@ extension String {
         var from = from
         if from < 0 {
             from = 0
-        } else if from >= self.length {
-            from = self.length - 1
+        } else if from >= self.count {
+            from = self.count - 1
         }
         var length = length
-        if from + length > self.length {
-            length = self.length - from
+        if from + length > self.count {
+            length = self.count - from
         }
         return str.substring(with: NSMakeRange(from, length))
     }

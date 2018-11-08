@@ -10,7 +10,7 @@ import UIKit
 
 extension CALayer {
 
-    var shadowUIColor: UIColor? {
+    @objc var shadowUIColor: UIColor? {
         get {
             if let cgColor = self.shadowColor {
                 return UIColor(cgColor: cgColor)
@@ -22,7 +22,7 @@ extension CALayer {
         }
     }
     
-    var borderUIColor: UIColor? {
+    @objc var borderUIColor: UIColor? {
         get {
             if let cgColor = self.borderColor {
                 return UIColor(cgColor: cgColor)

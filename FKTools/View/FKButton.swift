@@ -10,21 +10,21 @@ import UIKit
 
 class FKButton: UIButton {
     
-    var selectedBackgroundColor: UIColor? {
+    @IBInspectable var selectedBackgroundColor: UIColor? {
         didSet {
             if self.isSelected {
                 super.backgroundColor = self.selectedBackgroundColor
             }
         }
     }
-    var highlightedBackgroundColor: UIColor? {
+    @IBInspectable var highlightedBackgroundColor: UIColor? {
         didSet {
             if self.isHighlighted {
                 super.backgroundColor = self.highlightedBackgroundColor
             }
         }
     }
-    var disabledBackgroundColor: UIColor? {
+    @IBInspectable var disabledBackgroundColor: UIColor? {
         didSet {
             if !self.isEnabled {
                 super.backgroundColor = self.disabledBackgroundColor
@@ -40,7 +40,7 @@ class FKButton: UIButton {
         set {
             self.normalBackgroundColor = newValue
             if self.highlightedBackgroundColor == nil {
-                let newAlpha = (newValue?.alpha ?? 1) * 0.5
+                let newAlpha = (newValue?.rgbaInfo.alpha ?? 1) * 0.5
                 self.highlightedBackgroundColor = newValue?.withAlphaComponent(newAlpha)
             }
             self.updateBackgroundColor()
@@ -99,4 +99,3 @@ class FKButton: UIButton {
     }
     
 }
-

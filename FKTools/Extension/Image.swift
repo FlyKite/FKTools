@@ -100,4 +100,65 @@ extension UIImage {
         let image = UIImage(cgImage: cgImage, scale: self.scale, orientation: self.imageOrientation)
         return image
     }
+    
+    func getMainColor() -> UIColor? {
+        guard let cgImage = self.cgImage else { return nil }
+        
+        let width = Int(self.size.width * self.scale / UIScreen.main.scale)
+        let height = Int(self.size.height * self.scale / UIScreen.main.scale)
+        let bitmapData = malloc(width * height * 4)
+        defer {
+            free(bitmapData)
+        }
+        
+        let context = CGContext(data: bitmapData,
+                                width: width,
+                                height: height,
+                                bitsPerComponent: 8,
+                                bytesPerRow: width * 4,
+                                space: CGColorSpaceCreateDeviceRGB(),
+                                bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue)
+        let rect = CGRect(origin: .zero, size: CGSize(width: width, height: height))
+        context?.draw(cgImage, in: rect)
+        
+        let bitData = context?.data
+        let data = unsafeBitCast(bitData, to: UnsafePointer<CUnsignedChar>.self)
+        
+        var colors: [UIColor.RGBAInfo] = []
+        
+        for x in 0 ..< width {
+            for y in 0 ..< height {
+                let offset = (y * width + x) * 4
+                let red = (data + offset).pointee
+                let green = (data + offset + 1).pointee
+                let blue = (data + offset + 2).pointee
+                let alpha = (data + offset + 3).pointee
+                colors.append(UIColor.RGBAInfo(red: CGFloat(red) / 255,
+                                               green: CGFloat(green) / 255,
+                                               blue: CGFloat(blue) / 255,
+                                               alpha: CGFloat(alpha) / 255))
+            }
+        }
+        
+        let redSortedColors = colors.sorted { (color1, color2) -> Bool in
+            return color1.red < color2.red
+        }
+        let greenSortedColors = colors.sorted { (color1, color2) -> Bool in
+            return color1.green < color2.green
+        }
+        let blueSortedColors = colors.sorted { (color1, color2) -> Bool in
+            return color1.blue < color2.blue
+        }
+        if colors.count % 2 == 0 {
+            let red = (redSortedColors[colors.count / 2].red + redSortedColors[colors.count / 2 - 1].red) / 2
+            let green = (greenSortedColors[colors.count / 2].green + greenSortedColors[colors.count / 2 - 1].green) / 2
+            let blue = (blueSortedColors[colors.count / 2].blue + blueSortedColors[colors.count / 2 - 1].blue) / 2
+            return UIColor(red: red, green: green, blue: blue, alpha: 1)
+        } else {
+            let red = redSortedColors[colors.count / 2].red
+            let green = greenSortedColors[colors.count / 2].green
+            let blue = blueSortedColors[colors.count / 2].blue
+            return UIColor(red: red, green: green, blue: blue, alpha: 1)
+        }
+    }
 }

@@ -10,43 +10,33 @@ import UIKit
 
 extension UIColor {
     
-    var red: CGFloat {
-        get {
-            var red: CGFloat = 0
-            self.getRed(&red, green: nil, blue: nil, alpha: nil)
-            return red
-        }
+    struct RGBAInfo {
+        let red: CGFloat
+        let green: CGFloat
+        let blue: CGFloat
+        let alpha: CGFloat
     }
     
-    var green: CGFloat {
-        get {
-            var green: CGFloat = 0
-            self.getRed(nil, green: &green, blue: nil, alpha: nil)
-            return green
-        }
+    var rgbaInfo: RGBAInfo {
+        var red: CGFloat = 0
+        var green: CGFloat = 0
+        var blue: CGFloat = 0
+        var alpha: CGFloat = 0
+        self.getRed(&red, green: &green, blue: &blue, alpha: &alpha)
+        return RGBAInfo(red: red, green: green, blue: blue, alpha: alpha)
     }
     
-    var blue: CGFloat {
-        get {
-            var blue: CGFloat = 0
-            self.getRed(nil, green: nil, blue: &blue, alpha: nil)
-            return blue
-        }
-    }
-    
-    var alpha: CGFloat {
-        get {
-            var alpha: CGFloat = 0
-            self.getRed(nil, green: nil, blue: nil, alpha: &alpha)
-            return alpha
-        }
+    convenience init(rgbaInfo: RGBAInfo) {
+        self.init(red: rgbaInfo.red, green: rgbaInfo.green, blue: rgbaInfo.blue, alpha: rgbaInfo.alpha)
     }
     
     func transition(to color: UIColor, progress: CGFloat) -> UIColor {
-        let red = self.red + (color.red - self.red) * progress
-        let green = self.green + (color.green - self.green) * progress
-        let blue = self.blue + (color.blue - self.blue) * progress
-        let alpha = self.alpha + (color.alpha - self.alpha) * progress
+        let rgbaInfo = self.rgbaInfo
+        let targetInfo = color.rgbaInfo
+        let red = rgbaInfo.red + (targetInfo.red - rgbaInfo.red) * progress
+        let green = rgbaInfo.green + (targetInfo.green - rgbaInfo.green) * progress
+        let blue = rgbaInfo.blue + (targetInfo.blue - rgbaInfo.blue) * progress
+        let alpha = rgbaInfo.alpha + (targetInfo.alpha - rgbaInfo.alpha) * progress
         let resultColor = UIColor(red: red, green: green, blue: blue, alpha: alpha)
         return resultColor
     }
