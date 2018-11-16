@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A618F23A219EB0900093643D /* ViewReusable.swift in Sources */ = {isa = PBXBuildFile; fileRef = A618F239219EB0900093643D /* ViewReusable.swift */; };
 		A6B90F501F8DFEC500C63DDA /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6B90F4F1F8DFEC500C63DDA /* AppDelegate.swift */; };
 		A6B90F521F8DFEC500C63DDA /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6B90F511F8DFEC500C63DDA /* ViewController.swift */; };
 		A6B90F551F8DFEC500C63DDA /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A6B90F531F8DFEC500C63DDA /* Main.storyboard */; };
@@ -24,6 +25,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		A618F239219EB0900093643D /* ViewReusable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewReusable.swift; sourceTree = "<group>"; };
 		A6B90F4C1F8DFEC500C63DDA /* FKToolsDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FKToolsDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A6B90F4F1F8DFEC500C63DDA /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		A6B90F511F8DFEC500C63DDA /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -103,6 +105,7 @@
 				A6B90F661F8E001800C63DDA /* String.swift */,
 				A6EA9B7F1F8E7AAA00637761 /* UIView.swift */,
 				A6EA9B811F8E7DEB00637761 /* Screen.swift */,
+				A618F239219EB0900093643D /* ViewReusable.swift */,
 			);
 			path = Extension;
 			sourceTree = "<group>";
@@ -199,6 +202,7 @@
 				A6EA9B801F8E7AAA00637761 /* UIView.swift in Sources */,
 				A6B90F831F8E418300C63DDA /* Color.swift in Sources */,
 				A6B90F841F8E418300C63DDA /* Image.swift in Sources */,
+				A618F23A219EB0900093643D /* ViewReusable.swift in Sources */,
 				A6B90F851F8E418300C63DDA /* String.swift in Sources */,
 				A6EA9B821F8E7DEB00637761 /* Screen.swift in Sources */,
 				A6B90F861F8E418300C63DDA /* File.swift in Sources */,
