@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import ImageIO
 
 extension UIImage {
     
@@ -161,4 +162,38 @@ extension UIImage {
             return UIColor(red: red, green: green, blue: blue, alpha: 1)
         }
     }
+    
+    static func loadGIF(url: URL) {
+        //通过文件的url来将gif文件读取为图片数据引用
+        guard let source = CGImageSourceCreateWithURL(url as CFURL, nil) else { return }
+        //获取gif文件中图片的个数
+        let count = CGImageSourceGetCount(source)
+        //定义一个变量记录gif播放一轮的时间
+        var duration: TimeInterval = 0
+        //存放所有图片
+        var images: [UIImage] = []
+        //存放每一帧播放的时间
+        var durations: [TimeInterval] = []
+        //存放每张图片的宽度 （一般在一个gif文件中，所有图片尺寸都会一样）
+        var widths: [CGFloat] = []
+        //存放每张图片的高度
+        var heights: [CGFloat] = []
+        //遍历
+        for index in 0 ..< count {
+            guard let cgImage = CGImageSourceCreateImageAtIndex(source, index, nil) else { continue }
+            images.append(UIImage(cgImage: cgImage))
+            //获取图片信息
+            guard let info = CGImageSourceCopyPropertiesAtIndex(source, index, nil) as? [String: Any] else { continue }
+            let width = info[kCGImagePropertyPixelWidth as String] as? CGFloat ?? 0
+            let height = info[kCGImagePropertyPixelHeight as String] as? CGFloat ?? 0
+            widths.append(width)
+            heights.append(height)
+            guard let timeInfo = info[kCGImagePropertyGIFDictionary as String] as? [String: Any] else { continue }
+            let time = timeInfo[kCGImagePropertyGIFDelayTime as String] as? TimeInterval ?? 0
+            duration += time
+            durations.append(time)
+        }
+    }
+    
+    
 }
