@@ -20,6 +20,7 @@
 		A6B90F851F8E418300C63DDA /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6B90F661F8E001800C63DDA /* String.swift */; };
 		A6B90F861F8E418300C63DDA /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6B90F691F8E008A00C63DDA /* File.swift */; };
 		A6B90F871F8E418300C63DDA /* FKButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6B90F641F8DFF6F00C63DDA /* FKButton.swift */; };
+		A6BE0D01220063AF003DFC67 /* AttributedString.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6BE0D00220063AF003DFC67 /* AttributedString.swift */; };
 		A6EA9B801F8E7AAA00637761 /* UIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6EA9B7F1F8E7AAA00637761 /* UIView.swift */; };
 		A6EA9B821F8E7DEB00637761 /* Screen.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6EA9B811F8E7DEB00637761 /* Screen.swift */; };
 /* End PBXBuildFile section */
@@ -40,6 +41,7 @@
 		A6B90F691F8E008A00C63DDA /* File.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
 		A6B90F6A1F8E00E000C63DDA /* Array.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Array.swift; sourceTree = "<group>"; };
 		A6B90F6C1F8E022F00C63DDA /* CALayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CALayer.swift; sourceTree = "<group>"; };
+		A6BE0D00220063AF003DFC67 /* AttributedString.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttributedString.swift; sourceTree = "<group>"; };
 		A6EA9B7F1F8E7AAA00637761 /* UIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIView.swift; sourceTree = "<group>"; };
 		A6EA9B811F8E7DEB00637761 /* Screen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Screen.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -98,6 +100,7 @@
 		A6B90F621F8DFF0600C63DDA /* Extension */ = {
 			isa = PBXGroup;
 			children = (
+				A6BE0D00220063AF003DFC67 /* AttributedString.swift */,
 				A6B90F6A1F8E00E000C63DDA /* Array.swift */,
 				A6B90F6C1F8E022F00C63DDA /* CALayer.swift */,
 				A6B90F651F8DFF8E00C63DDA /* Color.swift */,
@@ -211,6 +214,7 @@
 				A6B90F6D1F8E022F00C63DDA /* CALayer.swift in Sources */,
 				A6B90F521F8DFEC500C63DDA /* ViewController.swift in Sources */,
 				A6B90F501F8DFEC500C63DDA /* AppDelegate.swift in Sources */,
+				A6BE0D01220063AF003DFC67 /* AttributedString.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
