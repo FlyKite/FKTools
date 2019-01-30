@@ -59,14 +59,6 @@ extension UIImage {
         return image
     }
     
-    func jpegData(with compressionQuality: CGFloat) -> Data? {
-        return UIImageJPEGRepresentation(self, compressionQuality)
-    }
-    
-    func pngData() -> Data? {
-        return UIImagePNGRepresentation(self)
-    }
-    
     func image(withTintColor color: UIColor) -> UIImage? {
         UIGraphicsBeginImageContextWithOptions(self.size, self.opaque, self.scale)
         guard let context = UIGraphicsGetCurrentContext() else {

@@ -90,7 +90,7 @@ extension String {
     
     func boundingRect(with size: CGSize,
                       options: NSStringDrawingOptions,
-                      attributes: [NSAttributedStringKey: Any]?,
+                      attributes: [NSAttributedString.Key: Any]?,
                       context: NSStringDrawingContext?) -> CGRect {
         let str = self as NSString
         return str.boundingRect(with: size,

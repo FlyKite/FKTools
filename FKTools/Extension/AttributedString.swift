@@ -12,7 +12,7 @@ class AttributesMaker {
     
     let attributedString: NSMutableAttributedString
     let range: NSRange
-    private var attributes: [NSAttributedStringKey: Any] = [:]
+    private var attributes: [NSAttributedString.Key: Any] = [:]
     
     init(attributedString: NSMutableAttributedString, range: NSRange) {
         self.attributedString = attributedString
