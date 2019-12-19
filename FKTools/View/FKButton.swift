@@ -8,94 +8,168 @@
 
 import UIKit
 
-class FKButton: UIButton {
+public protocol BackgroundSource { }
+
+public struct ColorBackground: BackgroundSource {
+    public var color: UIColor = .clear
+}
+
+public struct GradientBackground: BackgroundSource {
     
-    @IBInspectable var selectedBackgroundColor: UIColor? {
-        didSet {
-            if self.isSelected {
-                super.backgroundColor = self.selectedBackgroundColor
-            }
-        }
-    }
-    @IBInspectable var highlightedBackgroundColor: UIColor? {
-        didSet {
-            if self.isHighlighted {
-                super.backgroundColor = self.highlightedBackgroundColor
-            }
-        }
-    }
-    @IBInspectable var disabledBackgroundColor: UIColor? {
-        didSet {
-            if !self.isEnabled {
-                super.backgroundColor = self.disabledBackgroundColor
-            }
-        }
+    public enum GradientType {
+        case axial
+        case radial
+        
+        @available(iOS 12.0, *)
+        case conic
     }
     
-    fileprivate var normalBackgroundColor: UIColor?
-    override var backgroundColor: UIColor? {
-        get {
-            return self.normalBackgroundColor
-        }
-        set {
-            self.normalBackgroundColor = newValue
-            if self.highlightedBackgroundColor == nil {
-                let newAlpha = (newValue?.rgbaInfo.alpha ?? 1) * 0.5
-                self.highlightedBackgroundColor = newValue?.withAlphaComponent(newAlpha)
-            }
-            self.updateBackgroundColor()
-        }
+    public var colors: [UIColor]?
+    public var locations: [CGFloat]?
+    
+    public var startPoint: CGPoint = CGPoint(x: 0.5, y: 0)
+    public var endPoint: CGPoint = CGPoint(x: 0.5, y: 1)
+    
+    public var gradientType: GradientType = .axial
+    
+}
+
+open class FKButton: UIButton {
+    
+    /// Sets the background source to use for the specified state.
+    ///
+    /// In general, if a property is not specified for a state, the default is to use the
+    /// UIControlStateNormal value. If the UIControlStateNormal value is not set, then the
+    /// property defaults to a system value. Therefore, at a minimum, you should set the value
+    /// for the normal state.
+    ///
+    /// - Parameters:
+    ///   - source: The background source to use for the specified state.
+    ///   - state: The state that uses the specified title. The possible values are described in UIControlState.
+    open func setBackground(_ source: BackgroundSource, for state: UIControl.State) {
+        backgroundSourceMap[sourceKey(for: state)] = source
     }
     
-    override var isSelected: Bool {
-        get {
-            return super.isSelected
+
+    /// Returns the background gradient associated with the specified state.
+    ///
+    /// - Parameter state: The state that uses the background gradient. The possible values are described in UIControlState.
+    /// - returns: The background source for the specified state. If no title has been set for the specific state, this method returns the title associated with the UIControlStateNormal state.
+    open func background(for state: UIControl.State) -> BackgroundSource? {
+        if let source = backgroundSourceMap[sourceKey(for: state)] {
+            return source
         }
-        set {
-            super.isSelected = newValue
-            self.updateBackgroundColor()
-        }
+        return backgroundSourceMap[sourceKey(for: .normal)]
     }
     
-    override var isHighlighted: Bool {
-        get {
-            return super.isHighlighted
-        }
-        set {
-            super.isHighlighted = newValue
-            self.updateBackgroundColor()
-        }
+    open override class var layerClass: AnyClass {
+        return CAGradientLayer.self
     }
     
-    override var isEnabled: Bool {
-        get {
-            return super.isEnabled
+    private var backgroundSourceMap: [UInt: BackgroundSource] = [:]
+    
+    private func sourceKey(for state: UIControl.State) -> UInt {
+        let selected = state.contains(.selected)
+        let highlighted = state.contains(.highlighted)
+        let disabled = state.contains(.disabled)
+        var key: UInt = 0
+        if selected {
+            key |= UIControl.State.selected.rawValue
         }
+        if disabled {
+            key |= UIControl.State.disabled.rawValue
+        } else if highlighted {
+            key |= UIControl.State.highlighted.rawValue
+        }
+        return key
+    }
+    
+    open override var isEnabled: Bool {
+        get { return super.isEnabled }
         set {
             super.isEnabled = newValue
-            self.updateBackgroundColor()
+            checkCurrentState()
         }
     }
     
-    fileprivate func updateBackgroundColor() {
-        if !self.isEnabled, let color = self.disabledBackgroundColor {
-            super.backgroundColor = color
-        } else if self.isHighlighted, let color = self.highlightedBackgroundColor {
-            super.backgroundColor = color
-        } else if self.isSelected, let color = self.selectedBackgroundColor {
-            super.backgroundColor = color
+    open override var isHighlighted: Bool {
+        get { return super.isHighlighted }
+        set {
+            super.isHighlighted = newValue
+            checkCurrentState()
+        }
+    }
+    
+    open override var isSelected: Bool {
+        get { return super.isSelected }
+        set {
+            super.isSelected = newValue
+            checkCurrentState()
+        }
+    }
+    
+    private func checkCurrentState() {
+        guard let layer = layer as? CAGradientLayer else { return }
+        let state = self.state
+        if let source = backgroundSourceMap[sourceKey(for: state)] {
+            source.updateButtonBackground(layer)
         } else {
-            super.backgroundColor = self.normalBackgroundColor
+            var alpha: CGFloat?
+            if !isEnabled {
+                alpha = 0.5
+            } else if isHighlighted {
+                alpha = 0.8
+            }
+            let source = backgroundSourceMap[sourceKey(for: .normal)] ?? ColorBackground()
+            source.updateButtonBackground(layer, extraAlpha: alpha)
         }
     }
-    
-    override func setValue(_ value: Any?, forUndefinedKey key: String) {
-        switch key {
-        case "selectedBackgroundColor": self.selectedBackgroundColor = value as? UIColor
-        case "highlightedBackgroundColor": self.highlightedBackgroundColor = value as? UIColor
-        case "disabledBackgroundColor": self.disabledBackgroundColor = value as? UIColor
-        default: break
+}
+
+private extension BackgroundSource {
+    func updateButtonBackground(_ layer: CAGradientLayer, extraAlpha alpha: CGFloat? = nil) { }
+}
+
+private extension ColorBackground {
+    func updateButtonBackground(_ layer: CAGradientLayer, extraAlpha alpha: CGFloat? = nil) {
+        if let alpha = alpha {
+            var colorAlpha: CGFloat = 0
+            color.getRed(nil, green: nil, blue: nil, alpha: &colorAlpha)
+            let newColor = color.withAlphaComponent(colorAlpha * alpha)
+            layer.colors = [newColor.cgColor, newColor.cgColor]
+        } else {
+            layer.colors = [color.cgColor, color.cgColor]
+        }
+        layer.locations = [0, 1]
+        layer.startPoint = .zero
+        layer.endPoint = .zero
+        layer.type = .axial
+    }
+}
+
+private extension GradientBackground {
+    func updateButtonBackground(_ layer: CAGradientLayer, extraAlpha alpha: CGFloat? = nil) {
+        layer.colors = colors?.map { (color) -> CGColor in
+            if let alpha = alpha {
+                var colorAlpha: CGFloat = 0
+                color.getRed(nil, green: nil, blue: nil, alpha: &colorAlpha)
+                return color.withAlphaComponent(colorAlpha * alpha).cgColor
+            } else {
+                return color.cgColor
+            }
+        }
+        layer.locations = locations?.map { $0 as NSNumber }
+        layer.startPoint = startPoint
+        layer.endPoint = endPoint
+        switch gradientType {
+        case .axial:
+            layer.type = .axial
+        case .radial:
+            layer.type = .radial
+        case .conic:
+            if #available(iOS 12, *) {
+                layer.type = .conic
+            }
         }
     }
-    
 }
