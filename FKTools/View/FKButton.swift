@@ -8,7 +8,9 @@
 
 import UIKit
 
-public protocol BackgroundSource { }
+public protocol BackgroundSource {
+    func updateButtonBackground(_ layer: CAGradientLayer, extraAlpha alpha: CGFloat?)
+}
 
 public struct ColorBackground: BackgroundSource {
     public var color: UIColor = .clear
@@ -48,6 +50,7 @@ open class FKButton: UIButton {
     ///   - state: The state that uses the specified title. The possible values are described in UIControlState.
     open func setBackground(_ source: BackgroundSource, for state: UIControl.State) {
         backgroundSourceMap[sourceKey(for: state)] = source
+        checkCurrentState()
     }
     
 
@@ -112,7 +115,7 @@ open class FKButton: UIButton {
         guard let layer = layer as? CAGradientLayer else { return }
         let state = self.state
         if let source = backgroundSourceMap[sourceKey(for: state)] {
-            source.updateButtonBackground(layer)
+            source.updateButtonBackground(layer, extraAlpha: nil)
         } else {
             var alpha: CGFloat?
             if !isEnabled {
@@ -126,12 +129,8 @@ open class FKButton: UIButton {
     }
 }
 
-private extension BackgroundSource {
-    func updateButtonBackground(_ layer: CAGradientLayer, extraAlpha alpha: CGFloat? = nil) { }
-}
-
-private extension ColorBackground {
-    func updateButtonBackground(_ layer: CAGradientLayer, extraAlpha alpha: CGFloat? = nil) {
+extension ColorBackground {
+    public func updateButtonBackground(_ layer: CAGradientLayer, extraAlpha alpha: CGFloat?) {
         if let alpha = alpha {
             var colorAlpha: CGFloat = 0
             color.getRed(nil, green: nil, blue: nil, alpha: &colorAlpha)
@@ -147,8 +146,8 @@ private extension ColorBackground {
     }
 }
 
-private extension GradientBackground {
-    func updateButtonBackground(_ layer: CAGradientLayer, extraAlpha alpha: CGFloat? = nil) {
+extension GradientBackground {
+    public func updateButtonBackground(_ layer: CAGradientLayer, extraAlpha alpha: CGFloat?) {
         layer.colors = colors?.map { (color) -> CGColor in
             if let alpha = alpha {
                 var colorAlpha: CGFloat = 0
