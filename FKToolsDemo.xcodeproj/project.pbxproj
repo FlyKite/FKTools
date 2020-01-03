@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		6DAD93BB23BF38CE00985487 /* FloatingPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DAD93BA23BF38CE00985487 /* FloatingPanel.swift */; };
 		A618F23A219EB0900093643D /* ViewReusable.swift in Sources */ = {isa = PBXBuildFile; fileRef = A618F239219EB0900093643D /* ViewReusable.swift */; };
 		A6B90F501F8DFEC500C63DDA /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6B90F4F1F8DFEC500C63DDA /* AppDelegate.swift */; };
 		A6B90F521F8DFEC500C63DDA /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6B90F511F8DFEC500C63DDA /* ViewController.swift */; };
@@ -26,6 +27,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		6DAD93BA23BF38CE00985487 /* FloatingPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingPanel.swift; sourceTree = "<group>"; };
 		A618F239219EB0900093643D /* ViewReusable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewReusable.swift; sourceTree = "<group>"; };
 		A6B90F4C1F8DFEC500C63DDA /* FKToolsDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FKToolsDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A6B90F4F1F8DFEC500C63DDA /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -126,6 +128,7 @@
 			isa = PBXGroup;
 			children = (
 				A6B90F691F8E008A00C63DDA /* File.swift */,
+				6DAD93BA23BF38CE00985487 /* FloatingPanel.swift */,
 			);
 			path = Util;
 			sourceTree = "<group>";
@@ -204,6 +207,7 @@
 			files = (
 				A6EA9B801F8E7AAA00637761 /* UIView.swift in Sources */,
 				A6B90F831F8E418300C63DDA /* Color.swift in Sources */,
+				6DAD93BB23BF38CE00985487 /* FloatingPanel.swift in Sources */,
 				A6B90F841F8E418300C63DDA /* Image.swift in Sources */,
 				A618F23A219EB0900093643D /* ViewReusable.swift in Sources */,
 				A6B90F851F8E418300C63DDA /* String.swift in Sources */,
