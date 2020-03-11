@@ -93,16 +93,16 @@ class AlertController: UIViewController, FloatingPanel {
         }
     }
     
-    func floatingPanelAnimationConfigs() -> AnimationConfig? {
+    func floatingPanelAnimationConfigs() -> AnimationConfig {
         var config = AnimationConfig()
         config.maskType = .color(color: 0x03A9F4.rgbColor(alpha: 0.3))
 //        config.targetFrame = CGRect(x: 50, y: 300, width: 300, height: 300)
         return config
     }
     
-    func floatingPanelUpdateViews(for animationType: AnimationType, duration: TimeInterval, completeCallback: @escaping () -> Void) {
+    func floatingPanelUpdateViews(for transitionType: TransitionType, duration: TimeInterval, completeCallback: @escaping () -> Void) {
         UIView.animate(withDuration: duration, animations: {
-            switch animationType {
+            switch transitionType {
             case .presenting: self.container.frame = CGRect(x: self.view.bounds.width / 2 - 100,
                                                             y: self.view.bounds.height / 2 - 50,
                                                             width: 200,
@@ -175,11 +175,11 @@ class BottomSheet: UIViewController, FloatingPanel {
         }
     }
     
-    func floatingPanelAnimationConfigs() -> AnimationConfig? {
-        return nil
+    func floatingPanelAnimationConfigs() -> AnimationConfig {
+        return .default
     }
     
-    func floatingPanelUpdateViews(for animationType: AnimationType, duration: TimeInterval, completeCallback: @escaping () -> Void) {
+    func floatingPanelUpdateViews(for animationType: TransitionType, duration: TimeInterval, completeCallback: @escaping () -> Void) {
         UIView.animate(withDuration: duration, animations: {
             var frame = self.container.frame
             switch animationType {
