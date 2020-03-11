@@ -76,8 +76,8 @@ public extension FloatingPanel where Self: UIViewController {
     ///   - animated: 是否展示动画
     ///   - completion: dismiss结束的回调
     func dismiss(with interactiveTransition: UIViewControllerInteractiveTransitioning,
-                        animated: Bool,
-                        completion: (() -> Void)?) {
+                 animated: Bool,
+                 completion: (() -> Void)?) {
         transitioningManager?.interactiveDismissingTransition = interactiveTransition
         dismiss(animated: animated) {
             self.transitioningManager?.interactiveDismissingTransition = nil
@@ -90,24 +90,35 @@ public extension FloatingPanel where Self: UIViewController {
 
 extension UIViewController {
     public func present(_ floatingPanel: FloatingPanel,
+                        animated: Bool,
+                        completion: (() -> Void)?) {
+        floatingPanel.configFloatingPanelAnimator(with: nil)
+        present(floatingPanel as UIViewController, animated: animated) {
+            floatingPanel.transitioningManager?.interactivePresentingTransition = nil
+            completion?()
+        }
+    }
+    
+    public func present(_ floatingPanel: FloatingPanel,
                         interactiveTransition: UIViewControllerInteractiveTransitioning,
                         animated: Bool,
                         completion: (() -> Void)?) {
         floatingPanel.configFloatingPanelAnimator(with: interactiveTransition)
         present(floatingPanel as UIViewController, animated: animated) {
-            floatingPanel.transitioningManager?.interactiveDismissingTransition = nil
+            floatingPanel.transitioningManager?.interactivePresentingTransition = nil
             completion?()
         }
     }
 }
 
 extension FloatingPanel where Self: UIViewController {
-    fileprivate func configFloatingPanelAnimator(with interactiveTransition: UIViewControllerInteractiveTransitioning) {
+    fileprivate func configFloatingPanelAnimator(with interactiveTransition: UIViewControllerInteractiveTransitioning?) {
         let config = floatingPanelAnimationConfigs()
         let transitioningManager = FloatingPanelTransitioning(floatingPanel: self, config: config)
         transitioningManager.interactivePresentingTransition = interactiveTransition
         modalPresentationStyle = config.presentationStyle
         transitioningDelegate = transitioningManager
+        self.transitioningManager = transitioningManager
     }
 }
 
