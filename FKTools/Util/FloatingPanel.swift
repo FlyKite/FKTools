@@ -14,11 +14,33 @@ public enum AnimationType {
 }
 
 public struct AnimationConfig {
+    
+    /// 遮罩类型
+    enum MaskType {
+        /// 无遮罩
+        case none
+        /// 黑色半透明遮罩
+        case black(alpha: CGFloat)
+        /// 指定颜色的遮罩
+        case color(color: UIColor)
+    }
+    
+    /// present时的动画持续时间，默认值为0.35秒
     var duration: TimeInterval = 0.35
-    var maskAlpha: CGFloat = 0.5
+    /// dismiss时的动画持续时间，若为nil则使用duration的值
+    var durationForDismissing: TimeInterval?
+    /// 遮罩类型，默认值是alpha值为0.5的半透明黑色，
+    var maskType: MaskType = .black(alpha: 0.5)
+    
+    /// 可调整展示区域，默认nil不调整
+    var targetFrame: CGRect?
+    /// 展示样式，默认为overFullScreen，可根据需求调整
+    var presentationStyle: UIModalPresentationStyle = .overFullScreen
     
     init() { }
 }
+
+public typealias TransitionComplete = (_ isCancelled: Bool) -> Void
 
 public protocol FloatingPanel: UIViewController {
     /// 通过该方法返回动画配置，若返回nil则使用默认值
@@ -29,7 +51,7 @@ public protocol FloatingPanel: UIViewController {
     /// 通过该方法更新浮动面板显示和隐藏时的约束值或其他属性
     ///
     /// - Parameter type: 当前要执行的动画类型
-    func floatingPanelUpdateViews(for animationType: AnimationType)
+    func floatingPanelUpdateViews(for animationType: AnimationType, duration: TimeInterval, completeCallback: @escaping () -> Void)
 }
 
 extension FloatingPanel where Self: UIViewController {
@@ -108,28 +130,11 @@ private class FloatingPanelAnimator: NSObject, UIViewControllerAnimatedTransitio
         self.floatingPanel = floatingPanel
     }
     
-    private let maskView: UIView = {
-        let view = UIView()
-        view.backgroundColor = .black
-        return view
-    }()
+    private lazy var maskView: UIView = UIView()
     
     private lazy var config: AnimationConfig = {
         return floatingPanel.floatingPanelAnimationConfigs() ?? AnimationConfig()
     }()
-    
-    private var startMaskAlpha: CGFloat {
-        switch animationType {
-        case .presenting: return 0
-        case .dismissing: return config.maskAlpha
-        }
-    }
-    private var targetMaskAlpha: CGFloat {
-        switch animationType {
-        case .presenting: return config.maskAlpha
-        case .dismissing: return 0
-        }
-    }
     
     func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
         return config.duration
@@ -140,25 +145,42 @@ private class FloatingPanelAnimator: NSObject, UIViewControllerAnimatedTransitio
             return
         }
         let container = transitionContext.containerView
-        view.frame = container.bounds
-        maskView.frame = container.bounds
-        maskView.alpha = startMaskAlpha
-        if animationType == .presenting {
-            container.addSubview(maskView)
+        if let targetFrame = config.targetFrame {
+            container.frame = targetFrame
         }
+        view.frame = container.bounds
+        updateMask(for: animationType, container: container)
         container.addSubview(view)
         
-        view.layoutIfNeeded()
-        UIView.animate(withDuration: config.duration, delay: 0, options: .curveEaseOut, animations: {
-            self.maskView.alpha = self.targetMaskAlpha
-            self.floatingPanel.floatingPanelUpdateViews(for: self.animationType)
-            view.layoutIfNeeded()
-        }, completion: { (finished) in
+        let duration: TimeInterval
+        switch animationType {
+        case .presenting: duration = config.duration
+        case .dismissing: duration = config.durationForDismissing ?? config.duration
+        }
+        
+        floatingPanel.floatingPanelUpdateViews(for: animationType, duration: duration) {
             transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
-            if self.animationType == .dismissing && !transitionContext.transitionWasCancelled {
-                self.maskView.removeFromSuperview()
+        }
+    }
+    
+    private func updateMask(for animationType: AnimationType, container: UIView) {
+        if case .none = config.maskType {
+            return
+        }
+        switch animationType {
+        case .presenting:
+            maskView.backgroundColor = config.maskType.maskColor
+            maskView.frame = container.bounds
+            maskView.alpha = 0
+            container.addSubview(maskView)
+            UIView.animate(withDuration: config.duration) {
+                self.maskView.alpha = 1
             }
-        })
+        case .dismissing:
+            UIView.animate(withDuration: config.durationForDismissing ?? config.duration) {
+                self.maskView.alpha = 0
+            }
+        }
     }
 }
 
@@ -167,6 +189,16 @@ private extension AnimationType {
         switch self {
         case .presenting: return .to
         case .dismissing: return .from
+        }
+    }
+}
+
+private extension AnimationConfig.MaskType {
+    var maskColor: UIColor {
+        switch self {
+        case .none: return .clear
+        case let .black(alpha): return UIColor(white: 0, alpha: alpha)
+        case let .color(color): return color
         }
     }
 }
