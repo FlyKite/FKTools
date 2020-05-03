@@ -12,9 +12,7 @@ public protocol BackgroundSource {
     func updateButtonBackground(_ layer: CAGradientLayer, extraAlpha alpha: CGFloat?)
 }
 
-public struct ColorBackground: BackgroundSource {
-    public var color: UIColor = .clear
-}
+extension UIColor: BackgroundSource { }
 
 public struct GradientBackground: BackgroundSource {
     
@@ -123,21 +121,21 @@ open class FKButton: UIButton {
             } else if isHighlighted {
                 alpha = 0.8
             }
-            let source = backgroundSourceMap[sourceKey(for: .normal)] ?? ColorBackground()
+            let source = backgroundSourceMap[sourceKey(for: .normal)] ?? UIColor.clear
             source.updateButtonBackground(layer, extraAlpha: alpha)
         }
     }
 }
 
-extension ColorBackground {
+extension UIColor {
     public func updateButtonBackground(_ layer: CAGradientLayer, extraAlpha alpha: CGFloat?) {
         if let alpha = alpha {
             var colorAlpha: CGFloat = 0
-            color.getRed(nil, green: nil, blue: nil, alpha: &colorAlpha)
-            let newColor = color.withAlphaComponent(colorAlpha * alpha)
+            getRed(nil, green: nil, blue: nil, alpha: &colorAlpha)
+            let newColor = withAlphaComponent(colorAlpha * alpha)
             layer.colors = [newColor.cgColor, newColor.cgColor]
         } else {
-            layer.colors = [color.cgColor, color.cgColor]
+            layer.colors = [cgColor, cgColor]
         }
         layer.locations = [0, 1]
         layer.startPoint = .zero

@@ -52,6 +52,11 @@ public protocol FloatingPanel: UIViewController {
     /// - Returns: 浮动面板显示隐藏时的动画配置
     func floatingPanelAnimationConfigs() -> AnimationConfig
     
+    /// 转场动画开始之前该方法将被调用，该方法有一个默认的空实现，因此该方法是可选的（optional）
+    ///
+    /// - Parameter type: 即将开始的转场类型
+    func floatingPanelWillBeginTransition(type: TransitionType)
+    
     /// 通过该方法更新浮动面板显示和隐藏时的约束值或其他属性
     ///
     /// - Parameters:
@@ -84,6 +89,8 @@ public extension FloatingPanel where Self: UIViewController {
             completion?()
         }
     }
+    
+    func floatingPanelWillBeginTransition(type: TransitionType) { }
     
     func floatingPanelDidEndTransition(type: TransitionType, wasCancelled: Bool) { }
 }
@@ -118,6 +125,7 @@ extension FloatingPanel where Self: UIViewController {
         transitioningManager.interactivePresentingTransition = interactiveTransition
         modalPresentationStyle = config.presentationStyle
         transitioningDelegate = transitioningManager
+        modalPresentationCapturesStatusBarAppearance = true
         self.transitioningManager = transitioningManager
     }
 }
@@ -145,12 +153,12 @@ private class FloatingPanelTransitioning: NSObject, UIViewControllerTransitionin
     }
     
     func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-        animator.animationType = .presenting
+        animator.transitionType = .presenting
         return animator
     }
     
     func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-        animator.animationType = .dismissing
+        animator.transitionType = .dismissing
         return animator
     }
     
@@ -167,7 +175,7 @@ private class FloatingPanelTransitioning: NSObject, UIViewControllerTransitionin
 private class FloatingPanelAnimator: NSObject, UIViewControllerAnimatedTransitioning {
     
     unowned var floatingPanel: FloatingPanel
-    var animationType: TransitionType = .presenting
+    var transitionType: TransitionType = .presenting
     
     let config: AnimationConfig
     
@@ -183,8 +191,8 @@ private class FloatingPanelAnimator: NSObject, UIViewControllerAnimatedTransitio
     }
     
     func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
-        let animationType = self.animationType
-        guard let view = transitionContext.view(forKey: animationType.viewKey) else {
+        let transitionType = self.transitionType
+        guard let view = transitionContext.view(forKey: transitionType.viewKey) else {
             return
         }
         let container = transitionContext.containerView
@@ -192,27 +200,29 @@ private class FloatingPanelAnimator: NSObject, UIViewControllerAnimatedTransitio
             container.frame = targetFrame
         }
         view.frame = container.bounds
-        updateMask(for: animationType, container: container)
+        updateMask(for: transitionType, container: container)
         container.addSubview(view)
         
+        floatingPanel.floatingPanelWillBeginTransition(type: transitionType)
+        
         let duration: TimeInterval
-        switch animationType {
+        switch transitionType {
         case .presenting: duration = config.duration
         case .dismissing: duration = config.durationForDismissing ?? config.duration
         }
         
-        floatingPanel.floatingPanelUpdateViews(for: animationType, duration: duration) {
+        floatingPanel.floatingPanelUpdateViews(for: transitionType, duration: duration) {
             let wasCancelled = transitionContext.transitionWasCancelled
             transitionContext.completeTransition(!wasCancelled)
-            self.floatingPanel.floatingPanelDidEndTransition(type: animationType, wasCancelled: wasCancelled)
+            self.floatingPanel.floatingPanelDidEndTransition(type: transitionType, wasCancelled: wasCancelled)
         }
     }
     
-    private func updateMask(for animationType: TransitionType, container: UIView) {
+    private func updateMask(for transitionType: TransitionType, container: UIView) {
         if case .none = config.maskType {
             return
         }
-        switch animationType {
+        switch transitionType {
         case .presenting:
             maskView.backgroundColor = config.maskType.maskColor
             maskView.frame = container.bounds
