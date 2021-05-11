@@ -72,7 +72,7 @@ class ViewController: UIViewController {
 
 }
 
-class AlertController: UIViewController, FloatingPanel {
+class AlertController: UIViewController, CustomPresentableViewController {
     
     private let container: UIView = UIView()
     
@@ -93,16 +93,16 @@ class AlertController: UIViewController, FloatingPanel {
         }
     }
     
-    func floatingPanelAnimationConfigs() -> AnimationConfig {
+    func presentationAnimationConfigs() -> AnimationConfig {
         var config = AnimationConfig()
         config.maskType = .color(color: 0x03A9F4.rgbColor(alpha: 0.3))
 //        config.targetFrame = CGRect(x: 50, y: 300, width: 300, height: 300)
         return config
     }
     
-    func floatingPanelUpdateViews(for transitionType: TransitionType, duration: TimeInterval, completeCallback: @escaping () -> Void) {
+    func presentationUpdateViewsForTransition(type: TransitionType, duration: TimeInterval, completeCallback: @escaping () -> Void) {
         UIView.animate(withDuration: duration, animations: {
-            switch transitionType {
+            switch type {
             case .presenting: self.container.frame = CGRect(x: self.view.bounds.width / 2 - 100,
                                                             y: self.view.bounds.height / 2 - 50,
                                                             width: 200,
@@ -119,7 +119,7 @@ class AlertController: UIViewController, FloatingPanel {
     
 }
 
-class BottomSheet: UIViewController, FloatingPanel {
+class BottomSheet: UIViewController, CustomPresentableViewController {
     
     private let container: UIView = UIView()
     
@@ -175,14 +175,14 @@ class BottomSheet: UIViewController, FloatingPanel {
         }
     }
     
-    func floatingPanelAnimationConfigs() -> AnimationConfig {
+    func presentationAnimationConfigs() -> AnimationConfig {
         return .default
     }
     
-    func floatingPanelUpdateViews(for animationType: TransitionType, duration: TimeInterval, completeCallback: @escaping () -> Void) {
+    func presentationUpdateViewsForTransition(type: TransitionType, duration: TimeInterval, completeCallback: @escaping () -> Void) {
         UIView.animate(withDuration: duration, animations: {
             var frame = self.container.frame
-            switch animationType {
+            switch type {
             case .presenting: frame.origin.y = self.view.bounds.height - frame.height
             case .dismissing: frame.origin.y = self.view.bounds.height
             }
